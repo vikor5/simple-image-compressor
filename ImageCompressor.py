@@ -22,6 +22,9 @@ class Widget(QMainWindow):
     def __init__(self):
         super().__init__()
         self.scale_factor = 1.0
+        self.scale_factor_min = 0.05
+        self.scale_factor_max = 20
+        
         self.input_img_path = ""
         self.real_pixmap = None
         self.cmprsd_pixmap = None  # compressed image pix map
@@ -223,17 +226,19 @@ class Widget(QMainWindow):
         file_size_str += f"  ({percent:.1f}%)"
         self.cmprsd_img_size_label.setText(file_size_str)
 
-    def zoom_in(self):
+    def zoom_in(self, zoom_factor=1.25):
         if (self.real_pixmap==None): return
-        self.scale_factor *= 1.25
+        if (self.scale_factor*zoom_factor>self.scale_factor_max): return
+        self.scale_factor *= zoom_factor
         self.scale_images()
-        self.adjust_scrollbars(1.25)
+        self.adjust_scrollbars(zoom_factor)
     
-    def zoom_out(self):
+    def zoom_out(self, zoom_factor=0.8):
         if (self.real_pixmap==None): return
-        self.scale_factor *= 0.8
+        if (self.scale_factor*zoom_factor<self.scale_factor_min): return
+        self.scale_factor *= zoom_factor
         self.scale_images()
-        self.adjust_scrollbars(0.8)
+        self.adjust_scrollbars(zoom_factor)
     
     def scale_images(self):
         real_scaled_pixmap = self.real_pixmap.scaled(self.real_img_scroll_area.size()*self.scale_factor, Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -247,13 +252,10 @@ class Widget(QMainWindow):
                 scroll_bar.setValue(scroll_bar.value()*factor + (factor-1)*scroll_bar.pageStep()/2)
     
     def temp_btn_clicked(self):
-        horbar = self.cmprsd_img_scroll_area.verticalScrollBar()
-        
-        print("hor bar value:", horbar.value())
-        print("hor bar page step: ", horbar.pageStep())
-        print("hor bar max :", horbar.maximumHeight())
+        self.cmprsd_img_scroll_area.set_ver_scroll_bar_val(0.2)
     
     def temp_btn2_clicked(self):
+        self.cmprsd_img_scroll_area.set_hor_scroll_bar_val(0.5)
         pass
     
 window = Widget()

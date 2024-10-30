@@ -1,12 +1,34 @@
 from PySide6.QtWidgets import (
     QScrollArea, QWidget, QLabel, QSpinBox, QSlider,
+    QScrollBar,
     QHBoxLayout
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QPoint
 
 class customScrollArea(QScrollArea):
     def __init__(self):
         super().__init__()
+        
+        self.clicked = False # True when mouse left button is clicked and held
+        self.click_mouse_pos = QPoint() # position of mouse button when left clicked
+        self.click_scroll_pos = QPoint() # (hor, ver) scroll bars values when left clicked
+        
+        # TODO: change these and just set ranges for already existing scroll bars for scroll areas
+        
+        # create hor and ver scroll bars
+        self.hor_scroll_bar = QScrollBar(Qt.Horizontal)
+        self.ver_scroll_bar = QScrollBar(Qt.Vertical)
+        
+        # set up ranges for scroll bars
+        self.hor_scroll_bar.setMinimum(0)
+        self.hor_scroll_bar.setMaximum(100)
+        self.ver_scroll_bar.setMinimum(0)
+        self.ver_scroll_bar.setMaximum(100)
+        
+        # set these scroll bars to the scroll area
+        self.setHorizontalScrollBar(self.hor_scroll_bar)
+        self.setVerticalScrollBar(self.ver_scroll_bar)
+        
         self.zoom_in = None
         self.zoom_out = None
     
@@ -14,25 +36,74 @@ class customScrollArea(QScrollArea):
         self.zoom_in = zoom_in
         self.zoom_out = zoom_out
     
-    def setHorScrollBar(self):
-        """Set horizontal scroll bar"""
-        pass
-
-    def printScroll(self):
-        pass
+    # -------- set and get methods for normalised positions(0-1) of scroll bars ---------------
+    def set_hor_scroll_bar_val(self, nor_pos: float):
+        """Set horizontal scroll bar with normalized position(0-1)"""
+        # Calculate and set horizontal scrollbar position
+        h_min = self.hor_scroll_bar.minimum()
+        h_max = self.hor_scroll_bar.maximum()
+        h_scroll_value = h_min + (h_max - h_min) * nor_pos
+        self.hor_scroll_bar.setValue(h_scroll_value)
+    
+    def set_ver_scroll_bar_val(self, nor_pos: float):
+        """set vertical scroll bar with normalized position(0-1)"""
+        # calculate and set vertical scroll position
+        v_min = self.ver_scroll_bar.minimum()
+        v_max = self.ver_scroll_bar.maximum()
+        v_scroll_value = v_min + (v_max - v_min)*nor_pos
+        self.ver_scroll_bar.setValue(v_scroll_value)
+    
+    def get_hor_scroll_bar_val(self):
+        """returns a normalised position of horizontal scroll bar"""
+        return self.hor_scroll_bar.value()/self.hor_scroll_bar.maximum()
+    
+    def get_ver_scroll_bar_val(self):
+        """returns a normalised position of vertical scroll bar"""
+        return self.ver_scroll_bar.value()/self.ver_scroll_bar.maximum()
+    
+    # -------- END : set and get normalised positions : END ------------------
     
     def wheelEvent(self, event):
-        delta = event.angleDelta().y()
-        if event.modifiers() == Qt.ControlModifier:
-            if delta>20:
-                self.zoom_in()
-            if delta<-20:
-                self.zoom_out()
-        else:
-            if delta>20:
-                pass
+        # Here we scroll pageStep/7 value for each scroll of mousewheel (mouse wheel delta = 120)
+        xdelta = event.angleDelta().x()
+        if xdelta!=0:
+            # horzontal scrolling case
+            self.hor_scroll_bar.setValue(self.hor_scroll_bar.value()-self.hor_scroll_bar.pageStep()/7*xdelta/120)
             
-
+        ydelta = event.angleDelta().y()
+        if event.modifiers() == Qt.ControlModifier:
+            if ydelta>20:
+                self.zoom_in()
+            elif ydelta<-20:
+                self.zoom_out()
+        # horizontal scrolling case
+        elif event.modifiers() == Qt.ShiftModifier:
+            self.hor_scroll_bar.setValue(self.hor_scroll_bar.value()-self.hor_scroll_bar.pageStep()/7*ydelta/120)
+        # vertical scrolling case
+        else:
+            self.ver_scroll_bar.setValue(self.ver_scroll_bar.value()-self.ver_scroll_bar.pageStep()/7*ydelta/120)
+    
+    # -------- methods for panning ----------------
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.clicked = True
+            self.click_mouse_pos = event.pos()
+            self.click_scroll_pos = QPoint(self.hor_scroll_bar.value(), self.ver_scroll_bar.value())
+        return super().mousePressEvent(event)
+    
+    def mouseMoveEvent(self, event):
+        if self.clicked==False: return
+        delta = event.pos() - self.click_mouse_pos
+        self.hor_scroll_bar.setValue(self.click_scroll_pos.x()-delta.x())
+        self.ver_scroll_bar.setValue(self.click_scroll_pos.y()-delta.y())
+        return super().mouseMoveEvent(event)
+    
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.RightButton:
+            self.clicked = False
+        return super().mouseReleaseEvent(event)
+    # --------- methods for panning :END ----------------
+     
 class CompressionPanel(QWidget):
     """Horizontal widget. Label, Spinbox, Slider"""
     def __init__(self):
