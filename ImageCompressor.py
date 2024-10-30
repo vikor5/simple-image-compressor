@@ -12,7 +12,7 @@ from PySide6.QtCore import Qt
 
 import subprocess, os, sys, shutil
 
-import utils
+import utils, widgets
 import clipboardUtil
 
 app = QApplication(sys.argv)
@@ -89,7 +89,7 @@ class Widget(QMainWindow):
         self.real_image_label = QLabel()
         self.real_image_label.setBackgroundRole(QPalette.Base)
         # real image scroll area
-        self.real_img_scroll_area = utils.customScrollArea()
+        self.real_img_scroll_area = widgets.customScrollArea()
         self.real_img_scroll_area.setWidget(self.real_image_label)
         self.real_img_scroll_area.setWidgetResizable(True)
         real_image_layout.addWidget(self.real_img_scroll_area)
@@ -103,7 +103,7 @@ class Widget(QMainWindow):
         self.cmprsd_image_label = QLabel()
         self.cmprsd_image_label.setBackgroundRole(QPalette.Base)
         # compressed image scroll area
-        self.cmprsd_img_scroll_area = utils.customScrollArea()
+        self.cmprsd_img_scroll_area = widgets.customScrollArea()
         self.cmprsd_img_scroll_area.setWidget(self.cmprsd_image_label)
         self.cmprsd_img_scroll_area.setWidgetResizable(True)
         cmprsd_image_layout.addWidget(self.cmprsd_img_scroll_area)
