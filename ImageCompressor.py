@@ -60,29 +60,8 @@ class Widget(QMainWindow):
         self.central_widget = QWidget()
         
         # Compression layout - the top layout - has input fields for compression
-        # compression label
-        cmprs_layout = QHBoxLayout()
-        cmprs_label = QLabel("Compression: ")
-        initial_cmprs_value = 5
-        min_cmprs_value = 1
-        max_cmprs_value = 31
-        # compression spinbox
-        self.cmprs_spinbox = QSpinBox()
-        self.cmprs_spinbox.setMinimum(min_cmprs_value)
-        self.cmprs_spinbox.setMaximum(max_cmprs_value)
-        self.cmprs_spinbox.setValue(initial_cmprs_value)
-        self.cmprs_spinbox.valueChanged.connect(self.spinbox_val_changed)
-        
-        # compression slider
-        self.cmprs_slider = QSlider(Qt.Horizontal)
-        self.cmprs_slider.setMinimum(min_cmprs_value)
-        self.cmprs_slider.setMaximum(max_cmprs_value)
-        self.cmprs_slider.setValue(initial_cmprs_value)
-        self.cmprs_slider.valueChanged.connect(self.slider_val_changed)
-        
-        cmprs_layout.addWidget(cmprs_label)
-        cmprs_layout.addWidget(self.cmprs_spinbox)
-        cmprs_layout.addWidget(self.cmprs_slider)
+        self.cmprs_panel = widgets.CompressionPanel()
+        self.cmprs_panel.set_on_value_change(self.compress_image)
         
         # Actual image - this layout has the real image and it's size
         real_image_layout = QVBoxLayout()
@@ -142,31 +121,23 @@ class Widget(QMainWindow):
         self.real_img_size_label.setFont(font16)
         self.cmprsd_img_size_label.setFont(font16)
         
-        # self.real_img_size_label.setStyleSheet("QLabel {font-size: 18px}")
-        # self.cmprsd_img_size_label.setStyleSheet("QLabel {font-size: 18px}")
-        # self.cmprsd_img_size_label.setStyleSheet("QLabel {padding-left: 5px}")
-        # self.cmprsd_img_size_label.
-        
         
         down_sub_layout = QHBoxLayout()
         load_button = QPushButton("Load")
         load_button.clicked.connect(lambda: self.open_image(os.path.join(program_dir, "testImage.jpg")))
         down_sub_layout.addWidget(load_button)
-        zoom_in_btn = QPushButton("Zoom in")
-        zoom_in_btn.clicked.connect(self.zoom_in)
-        down_sub_layout.addWidget(zoom_in_btn)
-        zoom_out_btn = QPushButton("Zoom out")
-        zoom_out_btn.clicked.connect(self.zoom_out)
-        down_sub_layout.addWidget(zoom_out_btn)
         copy_btn = QPushButton("Copy")
         copy_btn.clicked.connect(lambda: clipboardUtil.copy_image_to_clipboard(self.output_img_path))
         down_sub_layout.addWidget(copy_btn)
         temp_btn = QPushButton("Temp")
         temp_btn.clicked.connect(self.temp_btn_clicked)
         down_sub_layout.addWidget(temp_btn)
+        temp_btn2 = QPushButton("Temp2")
+        temp_btn2.clicked.connect(self.temp_btn2_clicked)
+        down_sub_layout.addWidget(temp_btn2)
 
         main_layout = QVBoxLayout()
-        main_layout.addLayout(cmprs_layout)
+        main_layout.addWidget(self.cmprs_panel)
         main_layout.addLayout(images_layout)
         main_layout.addLayout(down_sub_layout)
         
@@ -221,20 +192,7 @@ class Widget(QMainWindow):
                 print("Error occured while saving: ", e)
                 
         else: print("Save operation cancelled.")
-    
-    def spinbox_val_changed(self, value):
-        # Block the signal and change the value of slider and unblock the signal
-        self.cmprs_slider.blockSignals(True)
-        self.cmprs_slider.setValue(value)
-        self.cmprs_slider.blockSignals(False)
-        self.compress_image()
-    
-    def slider_val_changed(self, value):
-        self.cmprs_spinbox.blockSignals(True)
-        self.cmprs_spinbox.setValue(value)
-        self.cmprs_spinbox.blockSignals(False)
-        self.compress_image()
-    
+        
     def compress_image(self):
         if (self.real_pixmap==None): return
         print("compressing")
@@ -242,7 +200,7 @@ class Widget(QMainWindow):
         # Call ffmpeg command to compress image
         input_image = self.input_img_path
         output_image = self.output_img_path
-        compression_value = str(self.cmprs_slider.value())
+        compression_value = str(self.cmprs_panel.value())
         ffmpeg_command = [
             'ffmpeg',
             '-i', input_image,
@@ -294,6 +252,9 @@ class Widget(QMainWindow):
         print("hor bar value:", horbar.value())
         print("hor bar page step: ", horbar.pageStep())
         print("hor bar max :", horbar.maximumHeight())
+    
+    def temp_btn2_clicked(self):
+        pass
     
 window = Widget()
 window.show()
