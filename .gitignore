@@ -1,7 +1,11 @@
+# ignoring output images
 out*
 
+# ignore test folder 
 test/
 
+# ignore the testImage.jpg or png
 testImage*
 
+# ignore pycache folder
 __pycache__/
