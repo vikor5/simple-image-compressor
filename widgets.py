@@ -96,6 +96,8 @@ class customScrollArea(QScrollArea):
     def mouseMoveEvent(self, event):
         if self.clicked==False: return
         delta = event.pos() - self.click_mouse_pos
+        if event.modifiers() == Qt.ShiftModifier:
+            delta = delta*4
         self.hor_scroll_bar.setValue(self.click_scroll_pos.x()-delta.x())
         self.ver_scroll_bar.setValue(self.click_scroll_pos.y()-delta.y())
         return super().mouseMoveEvent(event)

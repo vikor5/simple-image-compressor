@@ -20,7 +20,7 @@ app = QApplication(sys.argv)
 class Widget(QMainWindow):
     def __init__(self):
         super().__init__()
-        program_dir = os.path.dirname(sys.argv[0])
+        self.program_dir = os.path.dirname(sys.argv[0])
 
         with open("config.json", "r") as file:
             configuration = json.load(file)
@@ -36,11 +36,11 @@ class Widget(QMainWindow):
         self.input_img_path = ""
         self.real_pixmap = None
         self.cmprsd_pixmap = None  # compressed image pix map
-        self.output_img_path = os.path.join(program_dir,"output/out.jpg")
+        self.output_img_path = os.path.join(self.program_dir,"output/out.jpg")
         self.load_folder = load_folder
         
         self.setWindowTitle("Image Compressor")
-        self.setWindowIcon(QIcon(os.path.join(program_dir, "icons/minimize.png")))
+        self.setWindowIcon(QIcon(os.path.join(self.program_dir, "icons/minimize.png")))
         self.setGeometry(100, 100, 1000, 800)
         
         self.init_menubar()
@@ -195,8 +195,8 @@ class Widget(QMainWindow):
         self.input_img_path = input_file
         input_file_name_wo_ext = utils.get_base_name_wo_ext(self.input_img_path) # input image file name wihtout extensions
         output_file_name = self.out_img_name_pat.replace("*", input_file_name_wo_ext) + ".jpg"
-        print("output file name:", output_file_name)
-        self.output_img_path = "output/"+output_file_name
+        # print("output file name:", output_file_name)
+        self.output_img_path = self.program_dir+"/output/"+output_file_name
         
         # set pixmap to the label
         self.real_pixmap = QPixmap(self.input_img_path)
@@ -293,6 +293,7 @@ class Widget(QMainWindow):
         mime_data = QMimeData()
 
         # Set the file path as the MIME data
+        print("in drag-btn-clicked: output img path: self.output_img_path ", self.output_img_path)
         mime_data.setUrls([QUrl.fromLocalFile(self.output_img_path)])
         drag.setMimeData(mime_data)
 

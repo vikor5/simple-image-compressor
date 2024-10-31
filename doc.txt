@@ -9,3 +9,10 @@ config.json template
 
 in config.json, for out_img_name_pat - output image name pattern, 
     "*" will be replaced with input image name
+
+Ctrl + scroll to zoom
+Shift + Scroll for horizontal scrolling
+normal scroll for vertical scrolling
+
+click and drag on images for panning
+for fast panning, hold shift button. 4x pan speed, check in mouseMoveEvent
