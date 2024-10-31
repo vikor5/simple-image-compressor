@@ -187,7 +187,9 @@ class Widget(QMainWindow):
             "Image Files (*.png *.jpg *.jpeg)"  # File filter
         )
         
-        self.open_image(input_file=file_path)
+        if file_path: 
+            self.open_image(input_file=file_path)
+        else: print("Open operation cancelled.")    
     
     def open_image(self, input_file):
         self.input_img_path = input_file
