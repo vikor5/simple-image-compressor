@@ -1,0 +1,11 @@
+
+config.json template
+
+{
+    "default_compression_value" : 7,
+    "load_folder" : "..",
+    "out_img_name_pat" : "*"
+}
+
+in config.json, for out_img_name_pat - output image name pattern, 
+    "*" will be replaced with input image name

@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import (
     QScrollArea, QWidget, QLabel, QSpinBox, QSlider,
-    QScrollBar,
+    QScrollBar, QPushButton,
     QHBoxLayout
 )
-from PySide6.QtCore import Qt, QPoint
+from PySide6.QtCore import Qt, QPoint, QMimeData
+from PySide6.QtGui import QDrag
 
 class customScrollArea(QScrollArea):
     def __init__(self):
@@ -78,6 +79,7 @@ class customScrollArea(QScrollArea):
                 self.zoom_out()
         # horizontal scrolling case
         elif event.modifiers() == Qt.ShiftModifier:
+            # Here we scroll pageStep/7 value for each scroll of mousewheel (mouse wheel delta = 120)
             self.hor_scroll_bar.setValue(self.hor_scroll_bar.value()-self.hor_scroll_bar.pageStep()/7*ydelta/120)
         # vertical scrolling case
         else:
@@ -106,14 +108,14 @@ class customScrollArea(QScrollArea):
      
 class CompressionPanel(QWidget):
     """Horizontal widget. Label, Spinbox, Slider"""
-    def __init__(self):
+    def __init__(self, default_cmprs_val=5):
         super().__init__()
         
         layout = QHBoxLayout() # Main layout
         
         #compression label and some attributes
         cmprs_label = QLabel("Compression: ")
-        self.initial_cmprs_value = 5
+        self.initial_cmprs_value = default_cmprs_val
         self.min_cmprs_value = 1
         self.max_cmprs_value = 31
 

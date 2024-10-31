@@ -1,5 +1,5 @@
-# ignoring output images
-out*
+# ignoring output images and output folder
+output/
 
 # ignore test folder 
 test/
@@ -9,3 +9,6 @@ testImage*
 
 # ignore pycache folder
 __pycache__/
+
+#ignore configuration files
+config.json

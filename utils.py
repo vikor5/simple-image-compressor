@@ -3,6 +3,7 @@ import platform
 import subprocess
 from PIL import Image
 from io import BytesIO
+import glob
 
 def copy_image_to_clipboard(image_path):
     # Load the image
@@ -45,3 +46,19 @@ def format_file_size(file_size):
     else:
         file_size_str += f"{file_size :.2f}B"
     return file_size_str
+
+def get_latest_image_from_dir(dir: str):
+    try:
+        images = glob.glob(dir+"/*.png")
+        # print(images)
+        latest_image = max(images, key=os.path.getmtime)
+        return latest_image
+    
+    except Exception as e:
+        print("Error occured: ", e)
+        
+def get_base_name_wo_ext(file: str):
+    """get base name of a file without extensions and parent directory"""
+    basename = os.path.basename(file)
+    basename_wo_ext = basename[:basename.find(".")]
+    return basename_wo_ext
