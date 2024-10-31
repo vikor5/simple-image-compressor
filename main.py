@@ -13,7 +13,6 @@ from PySide6.QtCore import Qt
 import subprocess, os, sys, shutil
 
 import utils, widgets
-import clipboardUtil
 
 app = QApplication(sys.argv)
 program_dir = os.path.dirname(sys.argv[0])
@@ -130,7 +129,7 @@ class Widget(QMainWindow):
         load_button.clicked.connect(lambda: self.open_image(os.path.join(program_dir, "testImage.jpg")))
         down_sub_layout.addWidget(load_button)
         copy_btn = QPushButton("Copy")
-        copy_btn.clicked.connect(lambda: clipboardUtil.copy_image_to_clipboard(self.output_img_path))
+        copy_btn.clicked.connect(lambda: utils.copy_image_to_clipboard(self.output_img_path))
         down_sub_layout.addWidget(copy_btn)
         temp_btn = QPushButton("Temp")
         temp_btn.clicked.connect(self.temp_btn_clicked)
