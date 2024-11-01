@@ -22,7 +22,8 @@ class Widget(QMainWindow):
         super().__init__()
         self.program_dir = os.path.dirname(sys.argv[0])
 
-        with open("config.json", "r") as file:
+        config_file_path = os.path.join(self.program_dir, "config.json")
+        with open(config_file_path, "r") as file:
             configuration = json.load(file)
 
         self.default_cmprs_val = configuration["default_compression_value"]
@@ -36,7 +37,13 @@ class Widget(QMainWindow):
         self.input_img_path = ""
         self.real_pixmap = None
         self.cmprsd_pixmap = None  # compressed image pix map
-        self.output_img_path = os.path.join(self.program_dir,"output/out.jpg")
+        
+        # output images names and paths 
+        self.output_img_dir = os.path.join(self.program_dir, "output")
+        self.output_img_path = os.path.join(self.output_img_dir,"out.jpg")
+        if not os.path.exists(self.output_img_dir):
+            os.makedirs(self.output_img_dir)
+        
         self.load_folder = load_folder
         
         self.setWindowTitle("Image Compressor")
@@ -248,6 +255,10 @@ class Widget(QMainWindow):
             '-loglevel', 'quiet' # to disable the output
         ]
         result = subprocess.run(ffmpeg_command, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            print("ffmpeg command failed")
+            print("Error message from ffmpeg command: ", )
         
         # update pixmaps
         self.cmprsd_pixmap = QPixmap(output_image)
