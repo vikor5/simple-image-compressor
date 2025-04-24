@@ -48,7 +48,7 @@ class Widget(QMainWindow):
         
         self.setWindowTitle("Image Compressor")
         self.setWindowIcon(QIcon(os.path.join(self.program_dir, "icons/minimize.png")))
-        self.setGeometry(100, 100, 1000, 800)
+        self.setGeometry(100, 100, 900, 650)
         
         self.init_menubar()
         
@@ -304,7 +304,7 @@ class Widget(QMainWindow):
         mime_data = QMimeData()
 
         # Set the file path as the MIME data
-        print("in drag-btn-clicked: output img path: self.output_img_path ", self.output_img_path)
+        # print("in drag-btn-clicked: output img path: self.output_img_path ", self.output_img_path)
         mime_data.setUrls([QUrl.fromLocalFile(self.output_img_path)])
         drag.setMimeData(mime_data)
 
